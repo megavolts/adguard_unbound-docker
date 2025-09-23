@@ -1,8 +1,3 @@
-![Supports amd64 Architecture][amd64-shield]
-
-![Project Maintenance][maintenance-shield]
-
-
 TODO: Write the readme
 
 Container combining AdGuard Home and Unbound. I don't like the fact you cannot use 127.0.0.1 as an Upstream DNS server when trying to combine these two programs as seperate containers. The only way I found was using the Docker container IP address, which to me isn't reliable enough.
