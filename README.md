@@ -5,7 +5,10 @@ Container combining AdGuard Home and Unbound. I don't like the fact you cannot u
 Package version
 ===========
 
-![Docker Pulls]([https://img.shields.io/docker/pulls/megavolts/docker-adguard_unbound](https://hub.docker.com/repository/docker/megavolts/adguard_unbound/general))
+![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound)
+
+![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound-app)
+
 
 
 * Built own [Docker Image - x86_64](https://hub.docker.com/r/megavolts/unbound/tags)
