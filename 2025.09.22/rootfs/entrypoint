@@ -1,0 +1,136 @@
+#!/bin/sh
+
+DISABLE_SET_PERMS=${DISABLE_SET_PERMS:-false}
+UNBOUND_UID=${UNBOUND_UID:-1001}
+UNBOUND_GID=${UNBOUND_GID:-1001}
+PORT=${HEALTHCHECK_PORT:-5335}
+unbound_root=/usr/local/unbound/
+adguard_root=/usr/local/adguardhome/
+
+disable_set_perms=$DISABLE_SET_PERMS
+if $disable_set_perms; then
+  command="exec"
+else
+  set_perms=0
+  if [ $(id -u _unbound) -ne $UNBOUND_UID ]; then
+    usermod -o -u $UNBOUND_UID _unbound
+    set_perms=1
+  fi
+  if [ $(id -g _unbound) -ne $UNBOUND_GID ]; then
+    groupmod -o -g $UNBOUND_GID _unbound
+    set_perms=1
+  fi
+  if [ $set_perms -eq 1 ]; then
+    chown -R $UNBOUND_UID:$UNBOUND_GID $unbound_root >/dev/null 2>&1
+  fi
+  command="exec su-exec $UNBOUND_UID:$UNBOUND_GID"
+fi
+
+bi_white='\033[1;97m'
+bi_blue='\033[1;94m'
+bi_red='\033[1;91m'
+bi_green='\033[1;92m'
+bi_yellow='\033[1;93m' 
+color_default='\033[0m'
+
+echo -e "
+╔═════════════════════════════════════════════════════════════╗
+║                                                             ║
+║                 ${bi_yellow}MegaVolts' Adguard Unbound${color_default}                  ║
+║                                                             ║           
+║     https://github.com/megavolts/unbound_adguard-docker     ║
+║                                                             ║
+╚═════════════════════════════════════════════════════════════╝
+"
+# Create user
+
+disable_set_perms=${1:-false}
+if $disable_set_perms; then
+  user_color=$bi_green
+  group_color=$bi_green
+  if [ $(id -u) -eq 0 ]; then
+    user_color=$bi_red
+  fi
+  if [ $(id -g) -eq 0 ]; then
+    group_color=$bi_red
+  fi
+  echo -e "User: $user_color$(id -un)${color_default}
+Group: $group_color$(id -gn)${color_default}
+"
+else
+  echo -e "UNBOUND_UID: ${bi_blue}$(id -u _unbound)${color_default}
+UNBOUND_GID: ${bi_blue}$(id -g _unbound)${color_default}
+"
+fi
+
+echo -e "DISABLE_SET_PERMS: ${bi_yellow}$disable_set_perms${color_default}
+"
+
+
+# Populate unbound.conf as function of memory and CPU
+reserved=12582912
+availableMemory=$((1024 * $( (grep MemAvailable /proc/meminfo || grep MemTotal /proc/meminfo) | sed 's/[^0-9]//g' ) ))
+memoryLimit=$availableMemory
+[ -r /sys/fs/cgroup/memory/memory.limit_in_bytes ] && memoryLimit=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes | sed 's/[^0-9]//g')
+[[ ! -z $memoryLimit && $memoryLimit -gt 0 && $memoryLimit -lt $availableMemory ]] && availableMemory=$memoryLimit
+if [ $availableMemory -le $(($reserved * 2)) ]; then
+    echo "Not enough memory" >&2
+    exit 1
+fi
+availableMemory=$(($availableMemory - $reserved))
+rr_cache_size=$(($availableMemory / 3))
+# Use roughly twice as much rrset cache memory as msg cache memory
+msg_cache_size=$(($rr_cache_size / 2))
+nproc=$(nproc)
+export nproc
+if [ "$nproc" -gt 1 ];
+then
+    threads=$((nproc - 1))
+    # Calculate base 2 log of the number of processors
+    nproc_log=$(perl -e 'printf "%5.5f\n", log($ENV{nproc})/log(2);')
+
+    # Round the logarithm to an integer
+    rounded_nproc_log="$(printf '%.*f\n' 0 "$nproc_log")"
+
+    # Set *-slabs to a power of 2 close to the num-threads value.
+    # This reduces lock contention.
+    slabs=$(( 2 ** rounded_nproc_log ))
+else
+    threads=1
+    slabs=4
+fi
+
+if [ -f $unbound_root/unbound.conf ]; then
+    sed -i -e "s/@MSG_CACHE_SIZE@/${msg_cache_size}/" \
+       -e "s/@RR_CACHE_SIZE@/${rr_cache_size}/" \
+       -e "s/@THREADS@/${threads}/" \
+       -e "s/@SLABS@/${slabs}/" \
+       -e "s/@PORT@/${PORT}/" $unbound_root/unbound.conf
+fi
+#*
+
+# Start Unboud
+$unbound_root/unbound.d/sbin/unbound-anchor -a $unbound_root/iana.d/root.key
+$unbound_root/unbound.d/sbin/unbound -d -c $unbound_root/unbound.conf &
+
+status=$?
+if [ $status -ne 0 ];
+then
+  echo "Failed to start unbound: $status"
+  exit $status
+else
+  echo "Unbound started successfully on port $PORT"
+fi
+
+# Start AdGuardHome
+echo -e "
+Starting AdGuard Home ...
+"
+# chmod 700 $adguard_root/work
+/usr/local/adguardhome/sbin/AdGuardHome -c $adguard_root/conf/AdGuardHome.yaml -w $adguard_root/work
+status=$?
+
+if [ $status -ne 0 ];
+  echo "Failed to start AdGuardHome: $status"
+  exit $status
+fi

@@ -1,0 +1,27 @@
+services:
+  adguard-unbound:
+    container_name: adguard_unbound
+    image: megavolts/adguard_unbound-app:latest    
+    restart: unless-stopped
+    hostname: adguard-unbound
+    environment:
+      # - UNBOUND_UID=1001 # default 1000, >1000 for testing
+      # - UNBOUND_GID=1001 # default 1000, >1000 for testing
+      # - HEALTHCHECK_PORT=5335 # 5445 for testing, otherway 5335
+      # - DISABLE_SET_PERMS=false # true for testing
+    # Volumes store your data between container upgrades
+    volumes:
+      # - ./adguard/work:/usr/local/adguardhome/sbin/work # adguard container work directory
+      # - ./adguard/conf:/usr/local/adguardhome/sbin/conf # adguard container conf directory
+      #  - ./unbound/unbound.conf:/usr/local/unbound/conf.d/unbound.conf # map custom unbound config
+    ports:
+      - 53:53/tcp # AdGuard Home DNS connection
+      - 53:53/udp # AdGuard Home DNS connection
+      - 53000:3000/tcp # AdGuard Home install web panel. Can disable after installation is completed.
+      - 80:80/tcp # AdGuard Home web panel HTTP
+      - 5335:5335 # Unbound DNS resolver
+      - 443:443/tcp # AdGuard Home web panel HTTPS
+      - 784:784/udp # AdGuard Home DNS-over-QUIC service
+      - 853:853/tcp # AdGuard Home DNS-over-TLS/QUIC service
+      #- 67:67/udp # DHCP server
+      #- 68:68/udp # DHCP server
