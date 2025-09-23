@@ -4,14 +4,7 @@ Container combining AdGuard Home and Unbound. I don't like the fact you cannot u
 
 Package version
 ===========
-
-
-
-
-
-* Built own [Docker Image - x86_64](https://hub.docker.com/r/megavolts/unbound/tags)
-
-* Updated base image to Alpine: 3.22.1
+* Built on Linux/Alpine: 3.22.1
 
 * AdGuardHome: 0.107.66
 
