@@ -5,9 +5,7 @@ Container combining AdGuard Home and Unbound. I don't like the fact you cannot u
 Package version
 ===========
 
-![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound)
 
-![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound-app)
 
 
 
@@ -25,13 +23,15 @@ Package version
 - Use local root.hints and root.zone file, updated weekly with a cron job
 
 ## Available Docker Tags
-You can pull the most recent image from Docker Hub using it's `latest` tag or by using the corresponding image version number:
+![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound)
+ You can pull the most recent image from Docker Hub using it's `latest` tag or by using the corresponding image version number:
 
 `docker pull megavolts/adguard_home:latest` or `docker pull megavolts/adguard_home:20200925-0`
 
 The image versioning scheme follows the date-of-release convention, to reflect any new release of OpenSSL, Unbound or AdGuardHome. We used a complemented dash for any image revision, for example `2020095-0`.
 
-There is distroless lightweight builds of the image available. You can pull the image using the `adguard_home-app`, tag are following the full image build.
+![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound-app)
+ There is distroless lightweight builds of the image available. You can pull the image using the `adguard_home-app`, tag are following the full image build.
 
 `docker pull megavolts/adguard_home-app:latest` 
 
