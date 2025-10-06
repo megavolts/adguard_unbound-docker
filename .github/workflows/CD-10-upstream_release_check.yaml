@@ -41,8 +41,6 @@ jobs:
             echo OPENSSL_DOCKER_VERSION="$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/.current_release | awk '/^OPENSSL_DOCKERBUILDENV_VERSION=/' | cut -d= -f2 | cut -d- -f1)" >> $GITHUB_OUTPUT  
             echo DOCKER_REVISION="$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/.current_release | awk '/^DOCKER_IMAGE_VERSION=/' | cut -d- -f2)" >> $GITHUB_OUTPUT
 
-            echo OPENSSL_DOCKERBUILDENV_VERSION"$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/.current_release | awk '/^OPENSSL_DOCKERBUILDENV_VERSION=/' | cut -d= -f2)" >> $GITHUB_OUTPUT  
-
       - name: Is update available
         id: IS_UPDATE_AVAILABLE
         run: |
