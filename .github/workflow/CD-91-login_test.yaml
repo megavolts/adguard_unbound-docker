@@ -13,7 +13,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-    jobs:
+
 
   gpg-import:
     runs-on: ubuntu-latest
