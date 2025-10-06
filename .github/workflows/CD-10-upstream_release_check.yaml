@@ -1,0 +1,107 @@
+# 1 - Daily check of upstream release for Unbound and OpenSSL
+# OpenSSL Upstream Release Check cron job 0 17 * * Mon-Fri
+# Unbound Upstream Release Check cron job 0 18 * * Mon-Fri
+# Adguard Upstream Release Check cron job 0 19 * * Mon-Fri
+name: CD 10 Adguard Home and Unbound check
+
+on:
+  schedule:
+    - cron: '0 19 * * mon-fri'
+  workflow_dispatch:
+
+jobs:
+  unbound-update:
+    runs-on: ubuntu-latest
+              
+    steps:
+      - name: Get versions
+        id: GET_VERSIONS
+        run: |
+            # Adguard Home Release
+            BOOL="$(curl -s https://api.github.com/repos/AdguardTeam/AdGuardHome/releases | jq '.[0] | .prerelease')"
+            if $BOOL; then
+                echo "Pre-release, skipping"
+                exit 1
+            else
+                echo ADGUARDHOME_VERSION="$(curl -s https://api.github.com/repos/AdguardTeam/AdGuardHome/releases | jq '.[0] | .name' -r | grep -Eo '([0-9]+)(\.?[0-9]+)*' | head -1)" >> $GITHUB_OUTPUT
+            fi
+
+            # Unbound Docker Build Environement
+            echo UNBOUND_VERSION="$(curl -s https://api.github.com/repos/megavolts/unbound-docker/releases | jq '.[0] | .name' -r | grep -Eo '([0-9]+)(\.?[0-9]+)*' | head -1)" >> $GITHUB_OUTPUT 
+            echo UNBOUND_DOCKERBUILDENV_VERSION="$(curl -s https://api.github.com/repos/megavolts/unbound-docker/releases | jq '.[0] | .name' -r)" >> $GITHUB_OUTPUT 
+
+            # OpenSSL version
+            echo OPENSSL_VERSION="$(curl -s https://api.github.com/repos/megavolts/openssl-dockerbuildenv/releases | jq '.[0] | .name' -r | grep -Eo '([0-9]+)(\.?[0-9]+)*' | head -1)" >> $GITHUB_OUTPUT 
+            echo OPENSSL_DOCKERBUILDENV_VERSION="$(curl -s https://api.github.com/repos/megavolts/openssl-dockerbuildenv/releases | jq '.[0] | .name' -r)" >> $GITHUB_OUTPUT 
+
+            # Get current docker build version in .current_release
+            # After first full auto build change .current_release to buildvars
+            echo ADGUARDHOME_DOCKER_VERSION="$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/.current_release | awk '/^ADGUARDHOME_DOCKER_VERSION=/' | cut -d= -f2 | cut -d- -f1)" >> $GITHUB_OUTPUT  
+            echo UNBOUND_DOCKER_VERSION="$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/.current_release | awk '/^UNBOUND_DOCKER_VERSION=/' | cut -d= -f2 | cut -d- -f1)" >> $GITHUB_OUTPUT  
+            echo OPENSSL_DOCKER_VERSION="$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/.current_release | awk '/^OPENSSL_DOCKERBUILDENV_VERSION=/' | cut -d= -f2 | cut -d- -f1)" >> $GITHUB_OUTPUT  
+            echo DOCKER_REVISION="$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/.current_release | awk '/^DOCKER_IMAGE_VERSION=/' | cut -d- -f2)" >> $GITHUB_OUTPUT
+
+            echo OPENSSL_DOCKERBUILDENV_VERSION"$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/.current_release | awk '/^OPENSSL_DOCKERBUILDENV_VERSION=/' | cut -d= -f2)" >> $GITHUB_OUTPUT  
+
+      - name: Is update available
+        id: IS_UPDATE_AVAILABLE
+        run: |
+          if ! [[ "${{ steps.GET_VERSIONS.outputs.ADGUARDHOME_VERSION }}" = "${{ steps.GET_VERSIONS.outputs.ADGUARDHOME_DOCKER_VERSION }}" ]]; then
+            echo "Update found for Adguard Home"
+            echo BUILD_REVISION=0 >> $GITHUB_OUTPUT
+          elif ! [[ "${{ steps.GET_VERSIONS.outputs.UNBOUND_VERSION }}" = "${{ steps.GET_VERSIONS.outputs.UNBOUND_DOCKER_VERSION }}" ]]; then
+            echo "Update found for Unbound"
+            echo BUILD_REVISION="$(( ${{ steps.GET_VERSIONS.outputs.DOCKER_REVISION }}+1 ))" >> $GITHUB_OUTPUT  
+          elif ! [[ "${{ steps.GET_VERSIONS.outputs.OPENSSL_VERSION}}" = "${{ steps.GET_VERSIONS.outputs.OPENSSL_DOCKER_VERSION }}" ]]; then
+            echo "Update found for OpenSSL"
+            echo BUILD_REVISION="$(( ${{ steps.GET_VERSIONS.outputs.DOCKER_REVISION }}+1 ))" >> $GITHUB_OUTPUT  
+          else
+            echo "No update found"
+            exit 1
+          fi 
+         
+      - name: Checkout source
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          
+      - name: Import GPG key 
+        id: IMPORT_GPG
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.BOT_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.BOT_GPG_PWD }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_push_gpgsign: false
+          trust_level: 5
+
+      - name: Push files to repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: ${{ steps.IMPORT_GPG.outputs.name }}
+          GIT_AUTHOR_EMAIL: ${{ steps.IMPORT_GPG.outputs.email }}
+          GIT_COMMITTER_NAME: ${{ steps.IMPORT_GPG.outputs.name }}
+          GIT_COMMITTER_EMAIL: ${{ steps.IMPORT_GPG.outputs.email }}
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}  
+
+          BUILD_DATE=$(date  --iso-8601)
+          ADGUARD_VERSION=${{ steps.GET_VERSIONS.outputs.ADGUARD_VERSION }}
+          UNBOUND_DOCKERBUILDENV_VERSION=${{ steps.GET_VERSIONS.outputs.UNBOUND_DOCKERBUILDENV_VERSION }}
+          OPENSSL_DOCKERBUILDENV_VERSION=${{ steps.GET_VERSIONS.outputs.OPENSSL_DOCKERBUILDENV_VERSION }}
+
+          BUILD_REVISION=${{ steps.IS_UPDATE_AVAILABLE.outputs.BUILD_REVISION }}
+          DOCKER_IMAGE_VERSION=$UNBOUND_VERSION-$BUILD_REVISION
+
+          echo BUILD_DATE=$BUILD_DATE > buildvars
+          echo ADGUARD_VERSION=$ADGUARD_VERSION >> buildvars
+          echo UNBOUND_DOCKERBUILDENV_VERSION=$UNBOUND_DOCKERBUILDENV_VERSION >> buildvars
+          echo OPENSSL_DOCKERBUILDENV_VERSION=$OPENSSL_DOCKERBUILDENV_VERSION >> buildvars
+          echo DOCKER_IMAGE_VERSION=$DOCKER_IMAGE_VERSION >> buildvars
+
+          git add buildvars
+          git commit buildvars -m "Updated buildvars"
+          git push origin main
+          exit 0
+  
