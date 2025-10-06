@@ -206,10 +206,6 @@ RUN mkdir -p \
         /usr/local/unbound/iana.d/root.zone.* \
         /usr/local/unbound/unbound.d/include \
         /usr/local/unbound/unbound.d/lib \
-    # enable root.hints and root.zone updated via crontab
-    && (crontab -l 2>/dev/null; echo "0 0 * * 0 /bin/bash /usr/local/unbound/sbin/01-update_root_hints.sh && unbound-control reload") | crontab - \
-    && (crontab -l 2>/dev/null; echo "0 0 * * 0 /bin/bash /usr/local/unbound/sbin/01-update_root_zone.sh && unbound-control reload") | crontab - \
-    && (crontab -l 2>/dev/null; echo "5 0 * * 0 /bin/bash /usr/local/unbound/sbin/02-check_signature.sh && unbound-control reload") | crontab - \
     && find /usr/local/openssl/lib/libssl.so.* -type f | xargs strip --strip-all \
     && find /usr/local/openssl/lib/libcrypto.so.* -type f | xargs strip --strip-all \
     && strip --strip-all /usr/local/unbound/unbound.d/sbin/unbound \
@@ -217,6 +213,10 @@ RUN mkdir -p \
     && strip --strip-all /usr/local/unbound/unbound.d/sbin/unbound-checkconf \
     && strip --strip-all /usr/local/unbound/unbound.d/sbin/unbound-control \
     && strip --strip-all /usr/local/unbound/unbound.d/sbin/unbound-host
+    # enable root.hints and root.zone updated via crontab
+    && (crontab -l 2>/dev/null; echo "0 0 * * 0 /bin/bash /usr/local/unbound/sbin/01-update_root_hints.sh && unbound-control reload") | crontab - \
+    && (crontab -l 2>/dev/null; echo "0 0 * * 0 /bin/bash /usr/local/unbound/sbin/01-update_root_zone.sh && unbound-control reload") | crontab - \
+    && (crontab -l 2>/dev/null; echo "5 0 * * 0 /bin/bash /usr/local/unbound/sbin/02-check_signature.sh && unbound-control reload") | crontab - \
 
 COPY ./rootfs/usr/local/unbound/unbound.conf /usr/local/unbound/unbound.conf
 
@@ -383,7 +383,6 @@ COPY --from=adguard_unbound /usr/sbin/groupmod /usr/sbin/usermod \
 # for root.* updated
 COPY --from=adguard_unbound /usr/bin/curl /usr/bin/gpg /usr/bin/dirmngr /usr/bin/md5sum /usr/bin/nproc /usr/bin/perl \
         /app/usr/bin/
-    #   /usr/bin/gpg-agent 
     
 # for tuning unbound
 COPY --from=adguard_unbound  /usr/bin/nproc /usr/bin/perl \
