@@ -1,5 +1,5 @@
 # 2 - build Unbound
-name: CD 20 Manual build Adguard docker with udhcpc
+name: CD 21 Manual build Adguard docker with udhcpc
    
 on:   
   workflow_dispatch:
@@ -53,7 +53,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         env:
-          DOCKERHUB_SLUG: "megavolts/adguard_unbound:udhcpc"
+          DOCKERHUB_SLUG: "megavolts/adguard_unbound"
         with:
           platforms: linux/amd64,linux/arm64
           builder: ${{ steps.buildx.outputs.name }}
@@ -68,5 +68,4 @@ jobs:
           sbom: ${{ github.event_name != 'pull_request' }}
           provenance: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ env.DOCKERHUB_SLUG }}:${{ needs.buildvars.outputs.DOCKER_IMAGE_VERSION }}   
-            ${{ env.DOCKERHUB_SLUG }}:latest    
+            ${{ env.DOCKERHUB_SLUG }}:udhcpc    
