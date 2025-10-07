@@ -19,7 +19,7 @@ jobs:
       ADGUARDHOME_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.ADGUARDHOME_VERSION }}
       UNBOUND_DOCKERBUILDENV_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.UNBOUND_DOCKERBUILDENV_VERSION }}
       DOCKER_IMAGE_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.DOCKER_IMAGE_VERSION }}
-    
+      
     steps:             
     - name: Checkout source
       uses: actions/checkout@v5
