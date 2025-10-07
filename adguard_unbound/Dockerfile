@@ -10,6 +10,11 @@ ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
 ## 1.1 Checkout unbound
 FROM megavolts/unbound:$UNBOUND_DOCKERBUILDENV_VERSION AS unbound
 
+
+# entrypoint
+COPY  rootfs/entrypoint /
+
+
 ## 1.2. Install AdGuardHome
 FROM --platform=$BUILDPLATFORM alpine:latest AS adguard
 
@@ -78,7 +83,7 @@ COPY --from=unbound /usr/share/zoneinfo/ \
         /app/usr/share/zoneinfo/
 
 # entrypoint
-COPY  --chmod=755 ./rootfs/entrypoint \ 
+COPY --from=unbound --chmod=755 /entrypoint \
         /app/
 
 ## 2.2 Assemble adguard_unbound
