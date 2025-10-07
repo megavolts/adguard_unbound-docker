@@ -1,8 +1,6 @@
 ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
     BUILD_NAME="AdGuard Unbound" \
     BUILD_DESCRIPTION="Unbound is a validating, recursive, and caching DNS resolver. Bundled with AdGuard" \
-    UNBOUND_UID="1000" \
-    UNBOUND_GID="1000"
     BUILD_DATE \
     ADGUARDHOME_VERSION \
     UNBOUND_DOCKERBUILDENV_VERSION \
