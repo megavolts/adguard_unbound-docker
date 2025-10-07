@@ -24,7 +24,6 @@ RUN set -xe; apk --update --no-cache add \
        elif [[ "${TARGETARCH}" = "arm/v7" ]]; then ARCH="armv7"; \
        elif [[ "${TARGETARCH}" = "arm/v6" ]]; then ARCH="armv6"; \
        else ARCH=${TARGETARCH}; fi \
-
     && curl -L https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARDHOME_VERSION}/AdGuardHome_linux_${ARCH}.tar.gz -o adguard.tar.gz \
     && mkdir -p \
         /usr/local/adguardhome/sbin \
