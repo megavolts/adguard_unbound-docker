@@ -28,11 +28,6 @@ This image allow to use 127.0.0.1 as un upstream DNS server in Adguard Home conf
 
 </details>
 
-* Adguard Home version: 0.107.67
-
-* Unbound version: 1.24.0
-
-* OpenSSL version: 3.6.0
 
 ## Changes
 You can see the changes in the [`Releases`](https://github.com/megavolts/adguard_unbound-docker/RELEASES.md) section.
@@ -123,8 +118,7 @@ details.
 - Docker: [Apache 2.0](https://github.com/docker/docker/blob/master/LICENSE)
 - OpenSSL: [Apache-style license](https://www.openssl.org/source/license.html)
 - Unbound: [BSD License](https://unbound.nlnetlabs.nl/svn/trunk/LICENSE)
-- AdGuardHome: [BSD License](https://unbound.nlnetlabs.nl/svn/trunk/LICENSE)
-
+- AdGuardHome: [GPL 3.0](https://github.com/AdguardTeam/AdGuardHome/blob/master/LICENSE.txt)
 
 ## TODO
 [] add specific configuration under rootfs for adguard_unbound (unbound.sh)
