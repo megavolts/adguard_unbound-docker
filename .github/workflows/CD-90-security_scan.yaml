@@ -3,7 +3,8 @@ name: CD 90 Security Scan
              
 on:
   schedule:
-    - cron: '0 */24 * * *'
+#    - cron: '0 */24 * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch:
   workflow_run:
     workflows: [CD 30 Tag and Release]
@@ -30,25 +31,25 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        if: ${{ github.event_name != 'pull_request' }}
-        with:
-          image-ref: ${{ env.DOCKERHUB_SLUG }}:latest          
-          exit-code: '1'
-          ignore-unfixed: true
-          scan-type: image
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          format: 'sarif'
-          output: 'scan-results-latest.sarif'
+    #   - name: Run Trivy vulnerability scanner
+    #     uses: aquasecurity/trivy-action@master
+    #     if: ${{ github.event_name != 'pull_request' }}
+    #     with:
+    #       image-ref: ${{ env.DOCKERHUB_SLUG }}:latest          
+    #       exit-code: '1'
+    #       ignore-unfixed: true
+    #       scan-type: image
+    #       vuln-type: 'os,library'
+    #       severity: 'CRITICAL,HIGH'
+    #       format: 'sarif'
+    #       output: 'scan-results-latest.sarif'
       
-      - name: Upload SARIF result
-        id: UPLOAD_SARIF
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'scan-results-latest.sarif'
+    #   - name: Upload SARIF result
+    #     id: UPLOAD_SARIF
+    #     if: ${{ github.event_name != 'pull_request' }}
+    #     uses: github/codeql-action/upload-sarif@v3
+    #     with:
+    #       sarif_file: 'scan-results-latest.sarif'
           
       - name: Docker Scout CVEs
         uses: docker/scout-action@v1
