@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
 
       - name: Login to Dockerhub
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'g
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
