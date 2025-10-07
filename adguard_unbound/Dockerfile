@@ -20,10 +20,9 @@ ARG ADGUARDHOME_VERSION \
 
 RUN set -xe; apk --update --no-cache add \
         curl \
-    && if [[ "${TARGETARCH}" = "arm64" ]]; then ARCH="arm64"; fi \
-    && if [[ "${TARGETARCH}" = "amd64" ]]; then ARCH="amd64"; fi \
-    && if [[ "${TARGETARCH}" = "armv7" ]]; then ARCH="armv7"; fi \
-    && if [[ "${TARGETARCH}" = "armv6" ]]; then ARCH="armv6"; fi \
+    && if [[ "${TARGETARCH}" = "aarch64" ]]; then ARCH="arm64"; fi \
+    && if [[ "${TARGETARCH}" = "arm/v7" ]]; then ARCH="armv7"; fi \
+    && if [[ "${TARGETARCH}" = "arm/v6" ]]; then ARCH="armv6"; fi \
 
     && curl -L https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARDHOME_VERSION}/AdGuardHome_linux_${ARCH}.tar.gz -o adguard.tar.gz \
     && mkdir -p \
@@ -143,8 +142,8 @@ LABEL maintainer="megavolts <marc.oggier@megavolts.ch>"\
       org.opencontainers.image.version=${DOCKER_IMAGE_VERSION} \
       org.opencontainers.image.title="BUILD_NAME" \
       org.opencontainers.image.description="BUILD_DESCRIPTION" \
-      org.opencontainers.image.url="https://github.com/"${BUILD_REPOSITORY} \
+      org.opencontainers.image.url="https://github.com/${BUILD_REPOSITORY}" \
       org.opencontainers.image.vendor="Marc Oggier" \
       org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.source="https://github.com/"${BUILD_REPOSITORY} \
+      org.opencontainers.image.source="https://github.com/${BUILD_REPOSITORY}" \
       org.opencontainers.image.created="${BUILD_DATE}"
