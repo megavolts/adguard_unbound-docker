@@ -20,10 +20,11 @@ ARG ADGUARDHOME_VERSION \
 
 RUN set -xe; apk --update --no-cache add \
         curl \
-    && if [[ "${TARGETARCH}" = "aarch64" ]]; then ARCH="arm64"; fi \
     && if [[ "${TARGETARCH}" = "arm64" ]]; then ARCH="arm64"; fi \
     && if [[ "${TARGETARCH}" = "amd64" ]]; then ARCH="amd64"; fi \
     && if [[ "${TARGETARCH}" = "armv7" ]]; then ARCH="armv7"; fi \
+    && if [[ "${TARGETARCH}" = "armv6" ]]; then ARCH="armv6"; fi \
+
     && curl -L https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARDHOME_VERSION}/AdGuardHome_linux_${ARCH}.tar.gz -o adguard.tar.gz \
     && mkdir -p \
         /usr/local/adguardhome/sbin \
