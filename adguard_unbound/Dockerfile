@@ -29,7 +29,7 @@ RUN set -xe; apk --update --no-cache add \
         /usr/local/adguardhome/sbin \
         /usr/local/adguardhome/conf \
         /usr/local/adguardhome/work \
-    && tar -zxvf adguard.tar.gz ./AdGuardHome/AdGuardHome  --strip-components=2 -C /usr/local/adguardhome/sbin  \
+    && tar -zxf adguard.tar.gz ./AdGuardHome/AdGuardHome  --strip-components=2 -C /usr/local/adguardhome/sbin  \
     && chown -R nobody:nogroup /usr/local/adguardhome/sbin \
     && chmod 0700 /usr/local/adguardhome/sbin \
     && chmod 0700 /usr/local/adguardhome/work
