@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       BUILD_DATE: ${{ steps.IMPORT_BUILDVARS.outputs.BUILD_DATE }}
-      ADGUARDHOME_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.ADGUARDHOME_VERSION }}
+      ADGUARD_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.ADGUARD_VERSION }}
       UNBOUND_DOCKERBUILDENV_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.UNBOUND_DOCKERBUILDENV_VERSION }}
       DOCKER_IMAGE_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.DOCKER_IMAGE_VERSION }}
       
@@ -30,7 +30,7 @@ jobs:
       id: IMPORT_BUILDVARS
       run: |
         cat buildvars | grep BUILD_DATE >> $GITHUB_OUTPUT
-        cat buildvars | grep ADGUARDHOME_VERSION >> $GITHUB_OUTPUT
+        cat buildvars | grep ADGUARD_VERSION >> $GITHUB_OUTPUT
         cat buildvars | grep UNBOUND_DOCKERBUILDENV_VERSION >> $GITHUB_OUTPUT
         cat buildvars | grep DOCKER_IMAGE_VERSION >> $GITHUB_OUTPUT
 
@@ -68,7 +68,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
             BUILD_DATE=${{ needs.buildvars.outputs.BUILD_DATE }}  
-            ADGUARDHOME_VERSION=${{ needs.buildvars.outputs.ADGUARDHOME_VERSION }}  
+            ADGUARD_VERSION=${{ needs.buildvars.outputs.ADGUARD_VERSION }}  
             UNBOUND_DOCKERBUILDENV_VERSION=${{ needs.buildvars.outputs.UNBOUND_DOCKERBUILDENV_VERSION }}
             DOCKER_IMAGE_VERSION=${{ needs.buildvars.outputs.DOCKER_IMAGE_VERSION }}
           file: ./adguard_unbound/Dockerfile   

@@ -40,36 +40,37 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
 
           # new build
-          ADGUARDHOME_VERSION=$(cat ./buildvars | awk '/^ADGUARDHOME_VERSION=/' | cut -d= -f2)
+          ADGUARD_VERSION=$(cat ./buildvars | awk '/^ADGUARD_VERSION=/' | cut -d= -f2)
           UNBOUND_VERSION=$(cat ./buildvars | awk '/^UNBOUND_VERSION=/' | cut -d= -f2)
           OPENSSL_VERSION=$(cat ./buildvars | awk '/^OPENSSL_VERSION=/' | cut -d= -f2)
           DOCKER_IMAGE_VERSION=$(cat ./buildvars | awk '/^DOCKER_IMAGE_VERSION=/' | cut -d= -f2)
           
           # previous build
-          ADGUARDHOME_CURRENT_VERSION=$(cat ./.current_release | awk '/^ADGUARDHOME_VERSION=/' | cut -d= -f2)
-          UNBOUND_CURRENT_VERSION=$(cat ./.current_release | awk '/^UNBOUND_DOCKER_VERSION=/' | cut -d= -f2 | cut -d- -f1)
-          OPENSSL_CURRENT_VERSION=$(cat ./.current_release | awk '/^OPENSSL_DOCKER_VERSION=/' | cut -d= -f2 | cut -d- -f1)
-        
+          PREVIOUS_RELEASE=$(curl -s https://api.github.com/repos/megavolts/adguard_unbound-docker/releases | jq '.[0] | .name' -r)
+          ADGUARD_PREVIOUS_VERSION=$(curl -s https://raw.githubusercontent.com/megavolts/unbound-docker/refs/heads/$PREVIOUS_RELEASE/buildvars | awk '/^ADGUARD_VERSION=/' | cut -d= -f2)
+          UNBOUND_PREVIOUS_VERSION=$(curl -s https://raw.githubusercontent.com/megavolts/unbound-docker/refs/heads/$PREVIOUS_RELEASE/buildvars | awk '/^UNBOUND_DOCKERBUILDENV_VERSION=/' | cut -d= -f2 | cut -d- -f1)
+          OPENSSL_PREVIOUS_VERSION=$(curl -s https://raw.githubusercontent.com/megavolts/unbound-docker/refs/heads/$PREVIOUS_RELEASE/buildvars | awk '/^OPENSSL_DOCKERBUILDENV_VERSION=/' | cut -d= -f2 | cut -d- -f1)      
+
           # new release
           RELEASE_TAG=v$DOCKER_IMAGE_VERSION
           NOTES="\x23\x23 $(date '+%Y-%m-%d') <megavolts'bot>\n\x23\x23 What's Changed?"
           flag_adguard=false
           flag_unbound=false
           flag_openssl=false
-          if ! [[ $ADGUARDHOME_VERSION = $ADGUARDHOME_CURRENT_VERSION ]] ; then
-            NOTES+="\n\x2:arrow_up_small: Updated Unbound to $ADGUARDHOME_VERSION)"
+          if ! [[ $ADGUARD_VERSION = $ADGUARDHOME_PREVIOUS_VERSION ]] ; then
+            NOTES+="\n\x2:arrow_up_small: Updated Unbound to $ADGUARD_VERSION)"
             flag_unbound=true
           fi
-          if ! [[ $UNBOUND_VERSION = $UNBOUND_CURRENT_VERSION ]] ; then
+          if ! [[ $UNBOUND_VERSION = $UNBOUND_PREVIOUS_VERSION ]] ; then
             NOTES+="\n\x2:arrow_double_up: Updated Unbound to $UNBOUND_VERSION)"
             flag_unbound=true
           fi
-          if ! [[ $OPENSSL_VERSION = $OPENSSL_CURRENT_VERSION ]] ; then
+          if ! [[ $OPENSSL_VERSION = $OPENSSL_PREVIOUS_VERSION ]] ; then
             NOTES+="\n\x2:arrow_double_up: Updated OpenSSL to $OPENSSL_VERSION)"
             flag_openssl=true
           fi
           if $flag_adguard ; then
-            NOTES+="\n\n\x2A\x2AAdguard Home changelog\x2A\x2A: https://github.com/AdguardTeam/AdGuardHome/blob/v$ADGUARDHOME_VERSION/CHANGELOG.md" ;
+            NOTES+="\n\n\x2A\x2AAdguard Home changelog\x2A\x2A: https://github.com/AdguardTeam/AdGuardHome/blob/v$ADGUARD_VERSION/CHANGELOG.md" ;
           fi
           if $flag_unbound ; then
             NOTES+="\n\n\x2A\x2ANLnet Labs Unbound changelog\x2A\x2A: https://github.com/NLnetLabs/unbound/releases/tag/release-$UNBOUND_VERSION" ;
