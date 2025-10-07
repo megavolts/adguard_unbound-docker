@@ -219,7 +219,7 @@ ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
 FROM megavolts/unbound:$UNBOUND_DOCKERBUILDENV_VERSION AS unbound
 
 ## 1.3. Install AdGuardHome
-FROM --platform=$BUILDPLATFORM alpine:latest AS buildenv
+FROM --platform=$BUILDPLATFORM alpine:latest AS adguard
 
 WORKDIR /tmp/src
 
@@ -289,26 +289,26 @@ RUN set -xe; \
 
     
 ## 1.5 Finalize
-FROM stage AS adguard_unbound
+# FROM stage AS adguard_unbound
 
-ARG BUILD_DATE \
-    BUILD_TITLE \
-    BUILD_DESCRIPTION \
-    BUILD_NAME \
-    BUILD_REPOSITORY \
-    TARGETARCH \
-    DOCKER_IMAGE_VERSION
+# ARG BUILD_DATE \
+#     BUILD_TITLE \
+#     BUILD_DESCRIPTION \
+#     BUILD_NAME \
+#     BUILD_REPOSITORY \
+#     TARGETARCH \
+#     DOCKER_IMAGE_VERSION
 
-ENV UNBOUND_HEALTHCHECK_PORT=${UNBOUND_HEALTHCHECK_PORT} \
-    DISABLE_SET_PERMS=${DISABLE_SET_PERMS} \
-    UNBOUND_UID=${UNBOUND_UID} \
-    UNBOUND_GID=${UNBOUND_GID} \
-    TZ=${TZ} \
-    PATH=/usr/local/unbound/unbound.d/sbin:/usr/local/adguardhome/sbin:"$PATH" 
+# ENV UNBOUND_HEALTHCHECK_PORT=${UNBOUND_HEALTHCHECK_PORT} \
+#     DISABLE_SET_PERMS=${DISABLE_SET_PERMS} \
+#     UNBOUND_UID=${UNBOUND_UID} \
+#     UNBOUND_GID=${UNBOUND_GID} \
+#     TZ=${TZ} \
+#     PATH=/usr/local/unbound/unbound.d/sbin:/usr/local/adguardhome/sbin:"$PATH" 
 
-WORKDIR /
+# WORKDIR /
 
-VOLUME ["/usr/local/adguardhome/conf", "/usr/local/adguardhome/work", "/usr/local/unbound"]
+# VOLUME ["/usr/local/adguardhome/conf", "/usr/local/adguardhome/work", "/usr/local/unbound"]
 
 # 53     : TCP, UDP : DNS
 # 67     :      UDP : DHCP (server)
@@ -320,17 +320,17 @@ VOLUME ["/usr/local/adguardhome/conf", "/usr/local/adguardhome/work", "/usr/loca
 # 5335   : TCP, UDP : Unbound DNS resolver
 # 5443   : TCP, UDP : DNSCrypt (alt)
 # 6060   : TCP      : HTTP (pprof)
-EXPOSE 53/tcp 53/udp
-EXPOSE 67/udp
-EXPOSE 68/udp 68/tcp
-EXPOSE 80/tcp
-EXPOSE 443/tcp 443/udp
-EXPOSE 784/udp
-EXPOSE 853/udp
-EXPOSE 3000/tcp
-EXPOSE 5335/udp 5335/tcp
-EXPOSE 5443/tcp 5443/udp
-EXPOSE 6060/tcp
+# EXPOSE 53/tcp 53/udp
+# EXPOSE 67/udp
+# EXPOSE 68/udp 68/tcp
+# EXPOSE 80/tcp
+# EXPOSE 443/tcp 443/udp
+# EXPOSE 784/udp
+# EXPOSE 853/udp
+# EXPOSE 3000/tcp
+# EXPOSE 5335/udp 5335/tcp
+# EXPOSE 5443/tcp 5443/udp
+# EXPOSE 6060/tcp
 
 # HEALTHCHECK --interval=30s --timeout=15s --start-period=5s CMD sh /usr/local/sbin/healthcheck.sh 
 
@@ -349,56 +349,56 @@ EXPOSE 6060/tcp
 # # 2. Stage 2 - Make distroless adguard_unbound-app
 # # 2.1 Copy files from adguard_unbound
 # # aka make it tiny
-FROM scratch AS stage_app
+FROM scratch AS adguard_unbound
 
-COPY --from=adguard_unbound /usr/local/unbound \
+COPY --from=stage /usr/local/unbound \
         /app/usr/local/unbound
 
-COPY --from=adguard_unbound /usr/local/sbin \
+COPY --from=stage /usr/local/sbin \
         /app/usr/local/sbin        
 
-COPY --from=adguard_unbound /etc/crontabs/root \
+COPY --from=stage /etc/crontabs/root \
         /app/etc/crontabs/root
 
-COPY --from=adguard_unbound /usr/local/adguardhome \
+COPY --from=stage /usr/local/adguardhome \
         /app/usr/local/adguardhome
 
-COPY --from=adguard_unbound /lib/*-musl-* \
+COPY --from=stage /lib/*-musl-* \
         /app/lib/
 
-COPY --from=adguard_unbound /bin/sh /bin/sed /bin/grep /bin/netstat /bin/chown /bin/chgrp \
+COPY --from=stage /bin/sh /bin/sed /bin/grep /bin/netstat /bin/chown /bin/chgrp \
         /app/bin/
   
-COPY --from=adguard_unbound /sbin/su-exec /sbin/tini \
+COPY --from=stage /sbin/su-exec /sbin/tini \
         /app/sbin/
   
 # for changing user
-COPY --from=adguard_unbound /usr/sbin/groupmod /usr/sbin/usermod \
+COPY --from=stage /usr/sbin/groupmod /usr/sbin/usermod \
         /app/usr/sbin/
 
 # for root.* updated
-COPY --from=adguard_unbound /usr/bin/curl /usr/bin/gpg /usr/bin/dirmngr /usr/bin/md5sum /usr/bin/nproc /usr/bin/perl \
+COPY --from=stage /usr/bin/curl /usr/bin/gpg /usr/bin/dirmngr /usr/bin/md5sum /usr/bin/nproc /usr/bin/perl \
         /app/usr/bin/
     
 # for tuning unbound
-COPY --from=adguard_unbound  /usr/bin/nproc /usr/bin/perl \
+COPY --from=stage  /usr/bin/nproc /usr/bin/perl \
         /app/usr/bin/
 
-COPY --from=adguard_unbound /usr/lib/libacl* /usr/lib/libattr* /usr/lib/libutmps*  /usr/lib/libskarnet* \
+COPY --from=stage /usr/lib/libacl* /usr/lib/libattr* /usr/lib/libutmps*  /usr/lib/libskarnet* \
         /app/usr/lib/
 
-COPY --from=adguard_unbound  /usr/lib/perl5/core_perl/CORE/libperl* \
+COPY --from=stage  /usr/lib/perl5/core_perl/CORE/libperl* \
         /app/usr/lib/perl5/core_perl/CORE/
 
 # for healthcheck.sh
-COPY --from=adguard_unbound /usr/bin/awk /usr/bin/drill /usr/bin/id \
+COPY --from=stage /usr/bin/awk /usr/bin/drill /usr/bin/id \
         /app/usr/bin/
 
 # for ssl
-COPY --from=adguard_unbound /usr/local/openssl/lib/libssl.so.* /usr/local/openssl/lib/libcrypto.so.* \
+COPY --from=stage /usr/local/openssl/lib/libssl.so.* /usr/local/openssl/lib/libcrypto.so.* \
         /app/lib/
   
-COPY --from=adguard_unbound /usr/lib/libgcc_s* \
+COPY --from=stage /usr/lib/libgcc_s* \
         /usr/lib/libbsd* \ 
         /usr/lib/libmd* \
         /usr/lib/libsodium* \
@@ -411,19 +411,19 @@ COPY --from=adguard_unbound /usr/lib/libgcc_s* \
         /usr/lib/libngtcp2* \
         /app/usr/lib/
  
-COPY --from=adguard_unbound /etc/ssl/ \
+COPY --from=stage /etc/ssl/ \
         /app/etc/ssl/
 
 # user and groups
-COPY --from=adguard_unbound /etc/passwd /etc/group \
+COPY --from=stage /etc/passwd /etc/group \
         /app/etc/
   
 # timezone
-COPY --from=adguard_unbound /usr/share/zoneinfo/ \
+COPY --from=stage /usr/share/zoneinfo/ \
         /app/usr/share/zoneinfo/
 
 # entrypoint
-COPY --from=adguard_unbound --chmod=755 /entrypoint \
+COPY --from=stage --chmod=755 /entrypoint \
         /app/
 
 ## 2.2 Assemble adguard_unbound-app
@@ -452,7 +452,29 @@ ENV UNBOUND_HEALTHCHECK_PORT=${UNBOUND_HEALTHCHECK_PORT} \
     TZ=${TZ} \
     PATH=/usr/local/unbound/unbound.d/sbin:/usr/local/adguardhome/sbin:"$PATH" 
 
-COPY --from=stage_app /app/ /
+COPY --from=stage /app/ /
+
+# 53     : TCP, UDP : DNS
+# 67     :      UDP : DHCP (server)
+# 68     :      UDP : DHCP (client)
+# 80     : TCP      : HTTP (main)
+# 443    : TCP, UDP : HTTPS, DNS-over-HTTPS (incl. HTTP/3), DNSCrypt (main)
+# 853    : TCP, UDP : DNS-over-TLS, DNS-over-QUIC
+# 3000   : TCP, UDP : HTTP(S) (alt, incl. HTTP/3) for initial configuration
+# 5335   : TCP, UDP : Unbound DNS resolver
+# 5443   : TCP, UDP : DNSCrypt (alt)
+# 6060   : TCP      : HTTP (pprof)
+EXPOSE 53/tcp 53/udp
+EXPOSE 67/udp
+EXPOSE 68/udp 68/tcp
+EXPOSE 80/tcp
+EXPOSE 443/tcp 443/udp
+EXPOSE 784/udp
+EXPOSE 853/udp
+EXPOSE 3000/tcp
+EXPOSE 5335/udp 5335/tcp
+EXPOSE 5443/tcp 5443/udp
+EXPOSE 6060/tcp
 
 HEALTHCHECK --interval=30s --timeout=15s --start-period=5s CMD sh /usr/local/sbin/healthcheck.sh 
 
