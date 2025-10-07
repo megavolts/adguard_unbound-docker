@@ -216,10 +216,10 @@ ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
 # COPY ./rootfs/usr/local/unbound/unbound.conf /usr/local/unbound/unbound.conf
 
 ## 1.1 
-FROM megavolts/unbound:"$UNBOUND_DOCKERBUILDENV_VERSION" AS unbound
+FROM megavolts/unbound:$UNBOUND_DOCKERBUILDENV_VERSION AS unbound
 
 ## 1.3. Install AdGuardHome
-FROM buildenv AS adguard
+FROM --platform=$BUILDPLATFORM alpine:latest AS buildenv
 
 WORKDIR /tmp/src
 
@@ -467,3 +467,4 @@ LABEL maintainer="megavolts <marc.oggier@megavolts.ch>"\
       org.opencontainers.image.vendor="Marc Oggier" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.source="https://github.com/"${BUILD_REPOSITORY}
+      org.opencontainers.image.created="${BUILD_DATE}" \
