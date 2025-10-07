@@ -244,48 +244,52 @@ RUN set -xe; apk --update --no-cache add \
 
 
 ## 1.4 Assemble for target platform
-FROM alpine AS stage
+# FROM alpine AS stage
 
-COPY --from=adguard /usr/local/adguardhome /usr/local/adguardhome
-COPY --from=unbound /usr/local/unbound /usr/local/unbound
-COPY --from=unbound /usr/local/openssl /usr/local/openssl
-COPY --from=unbound /usr/local/sbin /usr/local/sbin
-COPY --from=unbound /etc/passwd /etc/group /etc/
-COPY --from=unbound /etc/crontabs/root /etc/crontabs/root
-COPY --from=unbound --chmod=775 /usr/local/sbin/* /usr/local/sbin/
-COPY --from=unbound --chmod=775 /entrypoint /
+# COPY --from=adguard /usr/local/adguardhome /usr/local/adguardhome
+# COPY --from=unbound /usr/local/unbound /usr/local/unbound
+# # already in /usr/lib/
+# COPY --from=unbound /usr/local/openssl /usr/local/openssl 
+# # already in /usr/sbin 
+# COPY --from=unbound /usr/local/sbin /usr/local/sbin
+# # already in /etc
+# COPY --from=unbound /etc/passwd /etc/group /etc/  
+# # already in /etc/crontabs/root
+# COPY --from=unbound /etc/crontabs/root /etc/crontabs/root 
+# # already in /
+# COPY --from=unbound --chmod=775 /entrypoint /
 
-RUN set -xe; \
-    apk --update --no-cache add \
-    ca-certificates \
-    # to update root.*
-    curl \
-    gpg \
-    perl \
-    # to tune unbound conf
-    coreutils \
-    libattr \
-    utmps-libs \
-    skalibs-libs \
-    # to execute unbound
-    expat \
-    protobuf-c \
-    libsodium \
-    nghttp2 \
-    libevent \
-    hiredis \
-    ngtcp2 \
-    # for timezone
-    tzdata \
-    # for dig
-    drill \
-    tini \
-    # to execute unbound.sh
-    shadow \
-    su-exec \
-    bash \
-    #cleanup
-    && rm -rf /tmp/* /var/cache/apk/*
+# RUN set -xe; \
+#     apk --update --no-cache add \
+#     ca-certificates \
+#     # to update root.*
+#     curl \
+#     gpg \
+#     perl \
+#     # to tune unbound conf
+#     coreutils \
+#     libattr \
+#     utmps-libs \
+#     skalibs-libs \
+#     # to execute unbound
+#     expat \
+#     protobuf-c \
+#     libsodium \
+#     nghttp2 \
+#     libevent \
+#     hiredis \
+#     ngtcp2 \
+#     # for timezone
+#     tzdata \
+#     # for dig
+#     drill \
+#     tini \
+#     # to execute unbound.sh
+#     shadow \
+#     su-exec \
+#     bash \
+#     #cleanup
+#     && rm -rf /tmp/* /var/cache/apk/*
 
     
 ## 1.5 Finalize
@@ -349,81 +353,52 @@ RUN set -xe; \
 # # 2. Stage 2 - Make distroless adguard_unbound-app
 # # 2.1 Copy files from adguard_unbound
 # # aka make it tiny
-FROM scratch AS adguard_unbound
+FROM scratch AS stage
 
-COPY --from=stage /usr/local/unbound \
-        /app/usr/local/unbound
-
-COPY --from=stage /usr/local/sbin \
-        /app/usr/local/sbin        
-
-COPY --from=stage /etc/crontabs/root \
-        /app/etc/crontabs/root
-
-COPY --from=stage /usr/local/adguardhome \
+# copy adguard
+COPY --from=adguard /usr/local/adguardhome \
         /app/usr/local/adguardhome
 
-COPY --from=stage /lib/*-musl-* \
-        /app/lib/
+# copy unbound
+COPY --from=unbound /usr/local/unbound \
+        /app/usr/local/unbound
 
-COPY --from=stage /bin/sh /bin/sed /bin/grep /bin/netstat /bin/chown /bin/chgrp \
-        /app/bin/
-  
-COPY --from=stage /sbin/su-exec /sbin/tini \
-        /app/sbin/
-  
-# for changing user
-COPY --from=stage /usr/sbin/groupmod /usr/sbin/usermod \
-        /app/usr/sbin/
+# copy  to /sbin        
+COPY --from=unbound /sbin \
+        /app/sbin     
+# copy  to /usr/sbin
+COPY --from=unbound /usr/sbin \
+        /app/usr/sbin  
 
-# for root.* updated
-COPY --from=stage /usr/bin/curl /usr/bin/gpg /usr/bin/dirmngr /usr/bin/md5sum /usr/bin/nproc /usr/bin/perl \
-        /app/usr/bin/
-    
-# for tuning unbound
-COPY --from=stage  /usr/bin/nproc /usr/bin/perl \
-        /app/usr/bin/
 
-COPY --from=stage /usr/lib/libacl* /usr/lib/libattr* /usr/lib/libutmps*  /usr/lib/libskarnet* \
-        /app/usr/lib/
-
-COPY --from=stage  /usr/lib/perl5/core_perl/CORE/libperl* \
-        /app/usr/lib/perl5/core_perl/CORE/
-
-# for healthcheck.sh
-COPY --from=stage /usr/bin/awk /usr/bin/drill /usr/bin/id \
-        /app/usr/bin/
-
-# for ssl
-COPY --from=stage /usr/local/openssl/lib/libssl.so.* /usr/local/openssl/lib/libcrypto.so.* \
-        /app/lib/
-  
-COPY --from=stage /usr/lib/libgcc_s* \
-        /usr/lib/libbsd* \ 
-        /usr/lib/libmd* \
-        /usr/lib/libsodium* \
-        /usr/lib/libexpat* \
-        /usr/lib/libprotobuf-c* \
-        /usr/lib/libnghttp2* \
-        /usr/lib/libldns* \
-        /usr/lib/libhiredis* \
-        /usr/lib/libevent* \
-        /usr/lib/libngtcp2* \
-        /app/usr/lib/
- 
-COPY --from=stage /etc/ssl/ \
+# copy to /etc
+COPY --from=unbound /etc/crontabs/root \
+        /app/etc/crontabs/root
+COPY --from=unbound /etc/ssl/ \
         /app/etc/ssl/
-
-# user and groups
-COPY --from=stage /etc/passwd /etc/group \
+COPY --from=unbound /etc/passwd /etc/group \
         /app/etc/
-  
+
+# copy to /lib
+COPY --from=unbound /lib \
+        /app/lib/
+# copty to /usr/lib
+COPY --from=unbound /usr/lib
+        /app/usr/lib
+
+# copy to /bin
+COPY --from=unbound /bin \
+        /app/bin/
+# copy to /usr/bin
+COPY --from=unbound /usr/bin \
+        /app/usr/bin/
+ 
 # timezone
-COPY --from=stage /usr/share/zoneinfo/ \
+COPY --from=unbound /usr/share/zoneinfo/ \
         /app/usr/share/zoneinfo/
 
 # entrypoint
-COPY --from=stage --chmod=755 /entrypoint \
+COPY --from=unbound --chmod=755 /entrypoint \
         /app/
 
 ## 2.2 Assemble adguard_unbound-app
