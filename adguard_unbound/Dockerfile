@@ -2,7 +2,7 @@ ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
     BUILD_NAME="AdGuard Unbound" \
     BUILD_DESCRIPTION="Unbound is a validating, recursive, and caching DNS resolver. Bundled with AdGuard" \
     BUILD_DATE \
-    ADGUARDHOME_VERSION \
+    ADGUARD_VERSION \
     UNBOUND_DOCKERBUILDENV_VERSION \
     DOCKER_IMAGE_VERSION
 
@@ -20,14 +20,14 @@ FROM --platform=$BUILDPLATFORM alpine:latest AS adguard
 
 WORKDIR /tmp/src
 
-ARG ADGUARDHOME_VERSION \
+ARG ADGUARD_VERSION \
     TARGETARCH
 
 RUN set -xe; apk --update --no-cache add \
         curl \
     && if [[ "${TARGETARCH}" = "aarch64" ]]; then ARCH="arm64"; \
        else ARCH=${TARGETARCH}; fi \
-    && curl -L https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARDHOME_VERSION}/AdGuardHome_linux_${ARCH}.tar.gz -o adguard.tar.gz \
+    && curl -L https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARD_VERSION}/AdGuardHome_linux_${ARCH}.tar.gz -o adguard.tar.gz \
     && mkdir -p \
         /usr/local/adguardhome/sbin \
         /usr/local/adguardhome/conf \
@@ -91,7 +91,7 @@ WORKDIR /
 
 FROM scratch AS adguard_unbound-app
 
-ARG ADGUARDHOME_VERSION \
+ARG ADGUARD_VERSION \
     BUILD_REVISION \
     BUILD_DATE \
     BUILD_TITLE \
