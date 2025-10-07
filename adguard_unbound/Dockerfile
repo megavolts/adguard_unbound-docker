@@ -78,7 +78,7 @@ COPY --from=unbound /usr/share/zoneinfo/ \
         /app/usr/share/zoneinfo/
 
 # entrypoint
-COPY --from=unbound --chmod=755 /entrypoint \
+COPY  --chmod=755 ./rootfs/entrypoint \ 
         /app/
 
 ## 2.2 Assemble adguard_unbound
