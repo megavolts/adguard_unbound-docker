@@ -71,11 +71,10 @@ jobs:
             ADGUARDHOME_VERSION=${{ needs.buildvars.outputs.ADGUARDHOME_VERSION }}  
             UNBOUND_DOCKERBUILDENV_VERSION=${{ needs.buildvars.outputs.UNBOUND_DOCKERBUILDENV_VERSION }}
             DOCKER_IMAGE_VERSION=${{ needs.buildvars.outputs.DOCKER_IMAGE_VERSION }}
-          file: ./unbound/Dockerfile   
+          file: ./adguard_unbound/Dockerfile   
           push: ${{ github.event_name != 'pull_request' }}
           sbom: ${{ github.event_name != 'pull_request' }}
           provenance: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ env.DOCKERHUB_SLUG }}:${{ needs.buildvars.outputs.DOCKER_IMAGE_VERSION }}   
-            ${{ env.DOCKERHUB_SLUG }}:latest
-    
+            ${{ env.DOCKERHUB_SLUG }}:latest    

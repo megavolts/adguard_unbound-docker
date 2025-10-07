@@ -6,11 +6,11 @@ Package version
 ===========
 * Built on Linux/Alpine: 3.22.1
 
-* AdGuardHome: 0.107.66
+* AdGuardHome: 0.107.67
 
 * Unbound version: 1.24.0
 
-* OpenSSL version: 3.5.3
+* OpenSSL version: 3.6.0
 
 ## Modification
 - Use local root.hints and root.zone file, updated weekly with a cron job
@@ -92,14 +92,12 @@ Docker configuration:
 
 # Acknowledgements
 
-Thanks to the many Docker Images who got me inspired, especiallly to [Hat3ph](https://github.com/hat3ph/adguard-unbound) and team [MΛDИVTTΛH](https://github.com/hat3ph/adguard-unbound).
+Thanks to the many Docker Images who got me inspired. This code was heavily influenced by [Hat3ph](https://github.com/hat3ph/adguard-unbound), [MatthewVance](https://github.com/MatthewVance/unbound-docker) and team [MΛDИVTTΛH](https://github.com/hat3ph/adguard-unbound).
 
 # Credit:
 - [Alpine Linux](https://www.alpinelinux.org/)
 - [Docker](https://www.docker.com/)
 - [Unbound](https://unbound.net/)
 - [OpenSSL](https://www.openssl.org/)
-- [Redis](https://redis.io/)
-- [Pi-hole](https://pi-hole.net/)
 - [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome)
 - [Aqua Security](https://trivy.dev/)
