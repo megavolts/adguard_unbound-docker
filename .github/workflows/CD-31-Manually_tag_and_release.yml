@@ -54,15 +54,15 @@ jobs:
           flag_unbound=false
           flag_openssl=false
           if ! [[ $ADGUARDHOME_VERSION = $ADGUARDHOME_CURRENT_VERSION ]] ; then
-            NOTES+="\n:arrow_up_small: Updated AdGuard Home to $ADGUARDHOME_VERSION)"
+            NOTES+="\n:arrow_up_small: Updated AdGuard Home to $ADGUARDHOME_VERSION"
             flag_adguard=true
           fi
           if ! [[ $UNBOUND_VERSION = $UNBOUND_CURRENT_VERSION ]] ; then
-            NOTES+="\n:arrow_double_up: Updated Unbound to $UNBOUND_CURRENT_VERSION)"
+            NOTES+="\n:arrow_double_up: Updated Unbound to $UNBOUND_CURRENT_VERSION"
             flag_unbound=true
           fi
           if ! [[ $OPENSSL_VERSION = $OPENSSL_CURRENT_VERSION ]] ; then
-            NOTES+="\n:arrow_double_up: Updated OpenSSL to $OPENSSL_CURRENT_VERSION)"
+            NOTES+="\n:arrow_double_up: Updated OpenSSL to $OPENSSL_CURRENT_VERSION"
             flag_openssl=true
           fi
           if $flag_adguard ; then

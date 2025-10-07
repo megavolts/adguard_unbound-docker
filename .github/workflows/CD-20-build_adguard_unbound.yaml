@@ -6,13 +6,10 @@ on:
     workflows: [CD 10 Adguard Home and Unbound check]
     types:
       - completed
-  # for testing
-  workflow_dispatch:
 
 jobs:
   buildvars:
-    # uncomment when not testing
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     outputs:
       BUILD_DATE: ${{ steps.IMPORT_BUILDVARS.outputs.BUILD_DATE }}
