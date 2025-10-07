@@ -466,5 +466,5 @@ LABEL maintainer="megavolts <marc.oggier@megavolts.ch>"\
       org.opencontainers.image.url="https://github.com/"${BUILD_REPOSITORY} \
       org.opencontainers.image.vendor="Marc Oggier" \
       org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.source="https://github.com/"${BUILD_REPOSITORY}
-      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.source="https://github.com/"${BUILD_REPOSITORY} \
+      org.opencontainers.image.created="${BUILD_DATE}"
