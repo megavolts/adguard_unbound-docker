@@ -6,12 +6,12 @@ An Alpine Linux Based network-wides ads & trackers blocking DNS serve (AdGuard H
 This image allow to use 127.0.0.1 as un upstream DNS server in Adguard Home configuration
 
 ![AdguardHome Version](https://img.shields.io/docker/v/megavolts/adguard_unbound?style=for-the-badge&label=megavolts/adguard_unbound)
-![Unbound Version](https://img.shields.io/docker/v/megavolts/unbound?style=for-the-badge&label=megavolts/unbound)
-![OpenSSL Version](https://img.shields.io/docker/v/megavolts/openssl-dockerbuildenv?style=for-the-badge&label=megavolts/openssl-dockerbuildenv)
-![CD Build Docker Image](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-30-tag_and_release.yaml?branch=main&style=for-the-badge&label=CD%20Build%20Docker%20Image)
 
-![Docker Size](https://img.shields.io/docker/image-size/megavolts/adguard_unbound/latest?style=for-the-badge&label=Image%20%20Size)
-![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound?style=for-the-badge&label=Image%20%20Pull)
+![Unbound Version](https://img.shields.io/docker/v/megavolts/unbound?style=for-the-badge&label=megavolts/unbound)
+
+![OpenSSL Version](https://img.shields.io/docker/v/megavolts/openssl-dockerbuildenv?style=for-the-badge&label=megavolts/openssl-dockerbuildenv)
+
+![CD Build Docker Image](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-30-tag_and_release.yaml?branch=main&style=for-the-badge&label=CD%20Build%20Docker%20Image)
 
 <details> 
     
@@ -46,7 +46,9 @@ You can see the changes in the [`Releases`](https://github.com/megavolts/adguard
 
 
 ## Available Docker Tags
-![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound)
+![Docker Size](https://img.shields.io/docker/image-size/megavolts/adguard_unbound/latest?style=for-the-badge&label=Image%20%20Size)
+![Docker Pulls](https://img.shields.io/docker/pulls/megavolts/adguard_unbound?style=for-the-badge&label=Image%20%20Pull)
+
  You can pull the most recent image from Docker Hub using it's `latest` tag or by using the corresponding image version number:
 
 `docker pull megavolts/adguard_unbound:latest` or `docker pull megavolts/adguard_unbound:0.107.67-0`
