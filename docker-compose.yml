@@ -1,10 +1,11 @@
 services:
   adguard-unbound:
     container_name: adguard_unbound
-    image: megavolts/adguard_unbound-app:latest    
+    image: megavolts/adguard_unbound:latest    
     restart: unless-stopped
     hostname: adguard-unbound
     environment:
+      - TZ:America/Anchorage  
       # - UNBOUND_UID=1001 # default 1000, >1000 for testing
       # - UNBOUND_GID=1001 # default 1000, >1000 for testing
       # - HEALTHCHECK_PORT=5335 # 5445 for testing, otherway 5335
@@ -14,6 +15,8 @@ services:
       # - ./adguard/work:/usr/local/adguardhome/sbin/work # adguard container work directory
       # - ./adguard/conf:/usr/local/adguardhome/sbin/conf # adguard container conf directory
       #  - ./unbound/unbound.conf:/usr/local/unbound/conf.d/unbound.conf # map custom unbound config
+      - $DOCKER_APPDATA/adguard/work:/usr/local/adguardhome/work # adguard container work directory
+      - $DOCKER_APPDATA/adguard/conf:/usr/local/adguardhome/conf # adguard container conf directory
     ports:
       - 53:53/tcp # AdGuard Home DNS connection
       - 53:53/udp # AdGuard Home DNS connection
@@ -25,3 +28,4 @@ services:
       - 853:853/tcp # AdGuard Home DNS-over-TLS/QUIC service
       #- 67:67/udp # DHCP server
       #- 68:68/udp # DHCP server
+    network_mode: bridge
