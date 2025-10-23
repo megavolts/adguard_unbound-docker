@@ -1,11 +1,13 @@
 ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
     BUILD_NAME="AdGuard Unbound" \
     BUILD_DESCRIPTION="Unbound is a validating, recursive, and caching DNS resolver. Bundled with AdGuard" \
+    UNBOUND_UID=1000 \
+    UNBOUND_GID=1000 \
     BUILD_DATE \
     BUILD_IMAGE_VERSION \
     ADGUARD_VERSION \
-    UNBOUND_DOCKERBUILDENV_VERSION="latest"
-
+    UNBOUND_DOCKERBUILDENV_VERSION="latest" \
+    ALPINE_VERSION="latest"
 # 1. Stage Unbound and Adguard Home
 ## 1.1 Checkout unbound
 FROM megavolts/unbound:$UNBOUND_DOCKERBUILDENV_VERSION AS unbound
@@ -16,7 +18,7 @@ COPY  rootfs/entrypoint /
 
 
 ## 1.2. Install AdGuardHome
-FROM --platform=$BUILDPLATFORM alpine:latest AS adguard
+FROM --platform=$BUILDPLATFORM alpine:$ALPINE_VERSION AS adguard
 
 WORKDIR /tmp/src
 
@@ -101,7 +103,7 @@ ARG ADGUARD_VERSION \
     BUILD_NAME \
     BUILD_REPOSITORY \
     BUILD_IMAGE_VERSION \
-    TARGETARCH
+    TARGETARCH \
     
 WORKDIR /
 
@@ -115,6 +117,8 @@ ENV UNBOUND_HEALTHCHECK_PORT=${UNBOUND_HEALTHCHECK_PORT} \
     PATH=/usr/local/unbound/unbound.d/sbin:/usr/local/adguardhome/sbin:"$PATH" 
 
 COPY --from=stage /app/ /
+
+USER $UNBOUND_UID
 
 # 53     : TCP, UDP : DNS
 # 67     :      UDP : DHCP (server)

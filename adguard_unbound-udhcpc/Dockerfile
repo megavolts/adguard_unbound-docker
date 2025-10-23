@@ -4,6 +4,7 @@ ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
     BUILD_DATE \
     ADGUARD_VERSION \
     UNBOUND_DOCKERBUILDENV_VERSION="latest" \
+    ALPINE_VERSION="latest" \
     DOCKER_IMAGE_VERSION
 
 # 1. Stage Unbound and Adguard Home
@@ -15,7 +16,7 @@ COPY  rootfs/entrypoint /
 
 
 ## 1.2. Install AdGuardHome
-FROM --platform=$BUILDPLATFORM alpine:latest AS adguard
+FROM --platform=$BUILDPLATFORM alpine:$ALPINE_VERSION AS adguard
 
 WORKDIR /tmp/src
 
@@ -116,6 +117,9 @@ ENV UNBOUND_HEALTHCHECK_PORT=${UNBOUND_HEALTHCHECK_PORT} \
     PATH=/usr/local/unbound/unbound.d/sbin:/usr/local/adguardhome/sbin:"$PATH" 
 
 COPY --from=stage /app/ /
+
+USER $UNBOUND_UID
+
 
 # 53     : TCP, UDP : DNS
 # 67     :      UDP : DHCP (server)
