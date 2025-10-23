@@ -20,9 +20,12 @@ This image allow to use 127.0.0.1 as un upstream DNS server in Adguard Home conf
 
 ![CD Unbound Release Check](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-10-upstream_release_check.yaml?branch=main&style=for-the-badge&label=CD%20Upstream%20Release%20Check)
 
-![CD Build Docker Image](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-20-build_adguard_unbound.yaml?branch=main&style=for-the-badge&label=CD%20Build%20Docker%20Image)
+![CD Build Docker Image](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-20-build_adguard_unbound.yaml?branch=main&style=for-the-badge&label=CD%20Build%20Docker%20Image) or
+![CD Manual Build Docker Image](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-21-manual_build_adguard_unbound.yaml?branch=main&style=for-the-badge&label=CD%20Manual%20Build%20Docker%20Image)
 
-![CD Release Tag](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-30-tag_and_release.yaml?branch=main&style=for-the-badge&label=CD%20Release%20Latest%20Tag)
+![CD Release Tag](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-30-tag_and_release.yaml?branch=main&style=for-the-badge&label=CD%20Release%20Latest%20Tag)  or
+![CD Manual Release Tage](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-31-manual_tag_and_release.yml?branch=main&style=for-the-badge&label=CD%20Manual%Release%20Tag)
+
 
 <!-- ![CD Security Scan](https://img.shields.io/github/actions/workflow/status/megavolts/adguard_unbound-docker/CD-90-security_scan.yaml?branch=main&style=for-the-badge&label=CD%20Security%20Scan) -->
 

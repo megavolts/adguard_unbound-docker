@@ -1,5 +1,5 @@
 # 2 - build Unbound
-name: CD 21 Manual build Adguard docker
+name: CD 21 Manual build Adguard Unbound
    
 on:   
   workflow_dispatch:
@@ -121,7 +121,7 @@ jobs:
         env:
           DOCKERHUB_SLUG: "megavolts/adguard_unbound"
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/armv7,linux/armv6,linux/arm64
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
             BUILD_DATE=${{ needs.buildvars.outputs.BUILD_DATE }}  
@@ -134,4 +134,6 @@ jobs:
           sbom: ${{ github.event_name != 'pull_request' }}
           provenance: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ env.DOCKERHUB_SLUG }}:udhcpc    
+            ${{ env.DOCKERHUB_SLUG }}:${{ needs.buildvars.outputs.BUILD_IMAGE_VERSION }}   
+            ${{ env.DOCKERHUB_SLUG }}:latest
+ 
