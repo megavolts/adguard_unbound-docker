@@ -4,7 +4,9 @@ name: CD 31 Manually Tag and Release
 on:       
   workflow_dispatch:
   workflow_run:
-    workflows: [CD 20 Build Unbound Docker Image]
+    workflows:
+      - "CD 21 Manual build Adguard Unbound"
+      - "CD 22 Manual build Adguard Unbound with udhcpc"
     types:
       - completed
 jobs: 
