@@ -15,7 +15,7 @@ jobs:
       BUILD_DATE: ${{ steps.IMPORT_BUILDVARS.outputs.BUILD_DATE }}
       ADGUARD_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.ADGUARD_VERSION }}
       UNBOUND_DOCKERBUILDENV_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.UNBOUND_DOCKERBUILDENV_VERSION }}
-      DOCKER_IMAGE_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.DOCKER_IMAGE_VERSION }}
+      BUILD_IMAGE_VERSION: ${{ steps.IMPORT_BUILDVARS.outputs.BUILD_IMAGE_VERSION }}
       
     steps:             
     - name: Checkout source
@@ -29,7 +29,7 @@ jobs:
         cat buildvars | grep BUILD_DATE >> $GITHUB_OUTPUT
         cat buildvars | grep ADGUARD_VERSION >> $GITHUB_OUTPUT
         cat buildvars | grep UNBOUND_DOCKERBUILDENV_VERSION >> $GITHUB_OUTPUT
-        cat buildvars | grep DOCKER_IMAGE_VERSION >> $GITHUB_OUTPUT
+        cat buildvars | grep BUILD_IMAGE_VERSION >> $GITHUB_OUTPUT
 
   adguard_unbound-build: 
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -66,12 +66,12 @@ jobs:
             BUILD_DATE=${{ needs.buildvars.outputs.BUILD_DATE }}  
             ADGUARD_VERSION=${{ needs.buildvars.outputs.ADGUARD_VERSION }}  
             UNBOUND_DOCKERBUILDENV_VERSION=${{ needs.buildvars.outputs.UNBOUND_DOCKERBUILDENV_VERSION }}
-            DOCKER_IMAGE_VERSION=${{ needs.buildvars.outputs.DOCKER_IMAGE_VERSION }}
+            BUILD_IMAGE_VERSION=${{ needs.buildvars.outputs.BUILD_IMAGE_VERSION }}
           file: adguard_unbound/Dockerfile 
           context: ./adguard_unbound/
           push: ${{ github.event_name != 'pull_request' }}
           sbom: ${{ github.event_name != 'pull_request' }}
           provenance: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ env.DOCKERHUB_SLUG }}:${{ needs.buildvars.outputs.DOCKER_IMAGE_VERSION }}   
+            ${{ env.DOCKERHUB_SLUG }}:${{ needs.buildvars.outputs.BUILD_IMAGE_VERSION }}   
             ${{ env.DOCKERHUB_SLUG }}:latest    

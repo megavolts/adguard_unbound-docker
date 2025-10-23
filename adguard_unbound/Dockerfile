@@ -2,9 +2,9 @@ ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
     BUILD_NAME="AdGuard Unbound" \
     BUILD_DESCRIPTION="Unbound is a validating, recursive, and caching DNS resolver. Bundled with AdGuard" \
     BUILD_DATE \
+    BUILD_IMAGE_VERSION \
     ADGUARD_VERSION \
-    UNBOUND_DOCKERBUILDENV_VERSION="latest" \
-    DOCKER_IMAGE_VERSION
+    UNBOUND_DOCKERBUILDENV_VERSION="latest"
 
 # 1. Stage Unbound and Adguard Home
 ## 1.1 Checkout unbound
@@ -52,6 +52,7 @@ COPY --from=unbound /usr/local/unbound \
 # copy  to /sbin        
 COPY --from=unbound /sbin \
         /app/sbin     
+
 # copy  to /usr/sbin
 COPY --from=unbound /usr/sbin \
         /app/usr/sbin  
@@ -74,6 +75,7 @@ COPY --from=unbound /usr/lib \
 # copy to /bin
 COPY --from=unbound /bin \
         /app/bin/
+
 # copy to /usr/bin
 COPY --from=unbound /usr/bin \
         /app/usr/bin/
@@ -98,7 +100,7 @@ ARG ADGUARD_VERSION \
     BUILD_DESCRIPTION \
     BUILD_NAME \
     BUILD_REPOSITORY \
-    DOCKER_IMAGE_VERSION \
+    BUILD_IMAGE_VERSION \
     TARGETARCH
     
 WORKDIR /
@@ -142,7 +144,7 @@ ENTRYPOINT ["/sbin/tini", "--", "/entrypoint"]
 
 LABEL maintainer="megavolts <marc.oggier@megavolts.ch>"\
       org.opencontainers.image.arch="${TARGETARCH}" \
-      org.opencontainers.image.version=${DOCKER_IMAGE_VERSION} \
+      org.opencontainers.image.version=${BUILD_IMAGE_VERSION} \
       org.opencontainers.image.title="BUILD_NAME" \
       org.opencontainers.image.description="BUILD_DESCRIPTION" \
       org.opencontainers.image.url="https://github.com/${BUILD_REPOSITORY}" \

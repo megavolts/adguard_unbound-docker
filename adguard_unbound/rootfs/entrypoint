@@ -130,7 +130,7 @@ Starting AdGuard Home ...
 /usr/local/adguardhome/sbin/AdGuardHome -c $adguard_root/conf/AdGuardHome.yaml -w $adguard_root/work
 status=$?
 
-if [ $status -ne 0 ];
+if [ $status -ne 0 ]; then
   echo "Failed to start AdGuardHome: $status"
   exit $status
 fi
