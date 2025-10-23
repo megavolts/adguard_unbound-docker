@@ -3,7 +3,7 @@ ARG BUILD_REPOSITORY="megavolts/adguard_unbound" \
     BUILD_DESCRIPTION="Unbound is a validating, recursive, and caching DNS resolver. Bundled with AdGuard" \
     BUILD_DATE \
     ADGUARD_VERSION \
-    UNBOUND_DOCKERBUILDENV_VERSION \
+    UNBOUND_DOCKERBUILDENV_VERSION="latest" \
     DOCKER_IMAGE_VERSION
 
 # 1. Stage Unbound and Adguard Home

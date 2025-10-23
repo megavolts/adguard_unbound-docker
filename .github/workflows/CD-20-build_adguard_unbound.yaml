@@ -32,8 +32,7 @@ jobs:
         cat buildvars | grep DOCKER_IMAGE_VERSION >> $GITHUB_OUTPUT
 
   adguard_unbound-build: 
-    # uncomment when not testing
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     needs: buildvars
     steps:

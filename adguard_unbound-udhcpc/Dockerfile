@@ -43,6 +43,8 @@ FROM scratch AS stage
 # copy adguard
 COPY --from=adguard /usr/local/adguardhome \
         /app/usr/local/adguardhome
+
+# copy basic networking to enable dhcp using macvlan
 COPY --from=adguard /sbin/udhcpc /sbin/ip \
         /app/sbin/
 
