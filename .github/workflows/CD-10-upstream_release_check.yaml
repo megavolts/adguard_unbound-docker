@@ -21,7 +21,7 @@ jobs:
             BOOL="$(curl -s https://api.github.com/repos/AdguardTeam/AdGuardHome/releases | jq '.[0] | .prerelease')"
             if $BOOL; then
                 echo "Pre-release, skipping"
-                exit 1
+                echo ADGUARD_VERSION="$(curl -s https://raw.githubusercontent.com/megavolts/adguard_unbound-docker/refs/heads/main/buildvars| awk '/^ADGUARD_VERSION=/' | cut -d= -f2 | cut -d- -f1)"  >> $GITHUB_OUTPUT
             else
                 echo ADGUARD_VERSION="$(curl -s https://api.github.com/repos/AdguardTeam/AdGuardHome/releases | jq '.[0] | .name' -r | grep -Eo '([0-9]+)(\.?[0-9]+)*' | head -1)" >> $GITHUB_OUTPUT
             fi

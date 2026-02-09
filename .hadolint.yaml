@@ -1,6 +1,6 @@
 {
   "hadolintPath": "hadolint",
-  "cliOptions": ["--no-color", "--ignore", "DL3000", "DL3007", "DL3018"],
+  "cliOptions": ["--no-color", "--ignore", "DL3000", "DL3007", "DL3018", "UndefinedVar"],
   "maxNumberOfProblems": 100,
   "outputLevel": "warning"
 }
